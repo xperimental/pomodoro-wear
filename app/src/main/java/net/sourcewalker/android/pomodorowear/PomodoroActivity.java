@@ -55,12 +55,6 @@ public class PomodoroActivity extends Activity {
         }
     }
 
-    public void onStopPressed(View view) {
-        if (connection.isConnected()) {
-            connection.service.stop();
-        }
-    }
-
     public void onResetPressed(View view) {
         if (connection.isConnected()) {
             connection.service.reset();
@@ -76,13 +70,11 @@ public class PomodoroActivity extends Activity {
             switch (state) {
                 case STOPPED:
                     findViewById(R.id.start).setEnabled(true);
-                    findViewById(R.id.stop).setEnabled(false);
                     findViewById(R.id.reset).setEnabled(false);
                     break;
                 case WORK:
                 case PAUSE:
                     findViewById(R.id.start).setEnabled(false);
-                    findViewById(R.id.stop).setEnabled(true);
                     findViewById(R.id.reset).setEnabled(true);
                     break;
             }
@@ -92,7 +84,6 @@ public class PomodoroActivity extends Activity {
             nextView.setText(R.string.not_connected);
 
             findViewById(R.id.start).setEnabled(false);
-            findViewById(R.id.stop).setEnabled(false);
             findViewById(R.id.reset).setEnabled(false);
         }
     }
@@ -123,14 +114,14 @@ public class PomodoroActivity extends Activity {
                     return getString(R.string.not_started);
                 } else {
                     long diff = end.getTime() - now.getTime();
-                    if (diff > 0) {
+                    if (diff > 1000) {
                         if (diff > 60000) {
-                            return getString(R.string.remaining_minutes, diff / 60000.0);
+                            return getString(R.string.remaining_minutes, Math.ceil(diff / 60000.0));
                         } else {
                             return getString(R.string.remaining_seconds, diff / 1000.0);
                         }
                     } else {
-                        return getString(R.string.none);
+                        return getString(R.string.soon);
                     }
                 }
             }

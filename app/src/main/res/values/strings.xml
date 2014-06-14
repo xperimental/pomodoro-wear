@@ -6,6 +6,6 @@
     <string name="not_connected">No connection!</string>
     <string name="not_started">Not started!</string>
     <string name="remaining_minutes">%.0f minutes</string>
-    <string name="none">none</string>
+    <string name="soon">soon...</string>
     <string name="remaining_seconds">%.0f seconds</string>
 </resources>

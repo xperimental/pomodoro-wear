@@ -4,6 +4,7 @@ public enum PomodoroState {
 
     STOPPED,
     WORK,
-    PAUSE
+    PAUSE,
+    LONG_PAUSE
 
 }

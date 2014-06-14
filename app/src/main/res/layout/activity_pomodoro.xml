@@ -83,14 +83,6 @@
             android:text="Start" />
 
         <Button
-            android:id="@+id/stop"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="onStopPressed"
-            android:text="Stop" />
-
-        <Button
             android:id="@+id/reset"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

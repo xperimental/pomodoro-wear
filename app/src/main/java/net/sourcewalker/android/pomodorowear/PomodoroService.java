@@ -2,18 +2,23 @@ package net.sourcewalker.android.pomodorowear;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
+import android.os.Message;
 
 import java.util.Date;
 
 public class PomodoroService extends Service {
 
-    private static final int WORK_TIME = 1;
+    private static final int WORK_TIME = 25;
+    private static final int PAUSE_TIME = 5;
+    private static final int LONG_PAUSE_TIME = 15;
+
     private PomodoroState state;
     private Date endTime;
     private int workCount;
     private Binder binder;
+    private TickHandler tickHandler;
 
     public PomodoroState getState() {
         return state;
@@ -24,14 +29,27 @@ public class PomodoroService extends Service {
     }
 
     public PomodoroState getNextState() {
-        return PomodoroState.PAUSE;
+        switch (state) {
+            case STOPPED:
+            default:
+                return PomodoroState.STOPPED;
+            case WORK:
+                if (workCount < 5) {
+                    return PomodoroState.PAUSE;
+                } else {
+                    return PomodoroState.LONG_PAUSE;
+                }
+            case PAUSE:
+            case LONG_PAUSE:
+                return PomodoroState.WORK;
+        }
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d("Pomodoro", "serviceCreate");
 
+        tickHandler = new TickHandler();
         binder = new Binder();
         reset();
     }
@@ -59,6 +77,7 @@ public class PomodoroService extends Service {
         state = PomodoroState.WORK;
         endTime = inMinutes(WORK_TIME);
         workCount = 1;
+        tickHandler.sendEmptyMessage(0);
     }
 
     private Date inMinutes(int minutes) {
@@ -67,8 +86,33 @@ public class PomodoroService extends Service {
         return new Date(now.getTime() + add);
     }
 
-    public void stop() {
-        endTime = null;
+    public void tick() {
+        Date now = new Date();
+        if (!now.before(endTime)) {
+            state = getNextState();
+            int mins;
+            switch (state) {
+                case STOPPED:
+                default:
+                    mins = 0;
+                    break;
+                case WORK:
+                    mins = WORK_TIME;
+                    workCount++;
+                    break;
+                case PAUSE:
+                    mins = PAUSE_TIME;
+                    break;
+                case LONG_PAUSE:
+                    mins = LONG_PAUSE_TIME;
+                    break;
+            }
+            if (mins > 0) {
+                endTime = inMinutes(mins);
+            } else {
+                reset();
+            }
+        }
     }
 
     public final class Binder extends android.os.Binder {
@@ -79,4 +123,15 @@ public class PomodoroService extends Service {
 
     }
 
+    private final class TickHandler extends Handler {
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (state != PomodoroState.STOPPED) {
+                tick();
+                sendEmptyMessageDelayed(0, 10000);
+            }
+        }
+
+    }
 }
