@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Pomodoro Wear</string>
+    <string name="phase_label">Current phase:</string>
+    <string name="time_label">Remaining time:</string>
+    <string name="next_label">Next phase:</string>
+    <string name="not_connected">No connection!</string>
+    <string name="not_started">Not started!</string>
+    <string name="remaining_minutes">%.0f minutes</string>
+    <string name="none">none</string>
+    <string name="remaining_seconds">%.0f seconds</string>
+</resources>
